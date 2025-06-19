@@ -18,7 +18,7 @@
 4. Configure:
    - **Name**: `prateeks-ai-assistant` (or your choice)
    - **Runtime**: Python 3
-   - **Build Command**: `pip install -r requirements_render.txt`
+   - **Build Command**: `pip install Flask==3.1.1 Flask-CORS==6.0.1 gunicorn==23.0.0 requests==2.32.4`
    - **Start Command**: `gunicorn --bind 0.0.0.0:$PORT main:app`
 
 ### 3. Set Environment Variables
