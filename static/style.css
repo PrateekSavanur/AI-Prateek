@@ -1,0 +1,240 @@
+:root {
+    --sidebar-width: 280px;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    background: var(--bs-dark);
+    border-right: 1px solid var(--bs-border-color);
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.main-content {
+    height: 100vh;
+}
+
+.chat-messages {
+    overflow-y: auto;
+    background: var(--bs-body-bg);
+}
+
+.message {
+    display: flex;
+    margin-bottom: 1.5rem;
+    max-width: 85%;
+}
+
+.user-message {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.ai-message {
+    margin-right: auto;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.user-message .message-avatar {
+    background: var(--bs-primary);
+    color: white;
+    margin-left: 12px;
+}
+
+.ai-message .message-avatar {
+    background: var(--bs-secondary);
+    color: white;
+    margin-right: 12px;
+}
+
+.message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-text {
+    background: var(--bs-dark);
+    padding: 12px 16px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.user-message .message-text {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: var(--bs-text-muted);
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.user-message .message-time {
+    text-align: right;
+}
+
+.message-sources {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--bs-secondary-bg);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.message-sources .badge {
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bs-success);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.offline {
+    background: var(--bs-danger);
+    animation: none;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bs-dark);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--bs-text-muted);
+    animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; }
+    30% { opacity: 1; }
+}
+
+.sample-question {
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* Scrollbar styling */
+.chat-messages::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--bs-border-color);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover,
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-secondary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        width: 280px;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .message {
+        max-width: 95%;
+    }
+}
+
+/* Loading state */
+.btn:disabled {
+    opacity: 0.6;
+}
+
+.loading .fas {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
