@@ -1,22 +1,20 @@
 import os
 import logging
 import json
-import re
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "your-secret-key-here")
 
-# Enable CORS for all routes
+# Enable CORS for all origins (adjust for production)
 CORS(app, origins=["*"])
 
-# Knowledge base - all about Prateek
+# Knowledge base - comprehensive information about Prateek
 KNOWLEDGE_BASE = {
     "about": """
 Prateek Prasanna Savanur is a Blockchain developer with a strong foundation in decentralized technologies, cloud computing, and DevOps practices.
@@ -89,28 +87,37 @@ Major Projects:
    - GitHub Backend: https://github.com/PrateekSavanur/Barter-Backend
    - GitHub Frontend: https://github.com/PrateekSavanur/Barter-Frontend
    - Live API: https://barter-backend-five.vercel.app/
+   - API Documentation: https://documenter.getpostman.com/view/31551887/2sAYQanBmZ
 
 4. Crowdfunding DApp
-   - Blockchain-based crowdfunding platform
-   - Uses Uniswap liquidity pools
+   - Blockchain-based crowdfunding platform with smart contracts
+   - Project creation, funding, and token distribution features
+   - Uses TokenFactory for creating reward tokens
    - Tech: Solidity, Foundry, Wagmi, React.js
 
 5. DAO (Decentralized Autonomous Organization)
-   - Governance system with voting and treasury management
-   - Tech: Solidity, OpenZeppelin
+   - Governance system with Governor contract and governance token (GovToken)
+   - Proposal creation, voting, and execution mechanisms
+   - Tech: Solidity, OpenZeppelin, Foundry
    - GitHub: https://github.com/PrateekSavanur/Foundry-DAO.git
 
-6. Other Projects:
+6. Event Management Contract
+   - Solidity contract for creating events and selling tickets
+   - Features ticket purchasing, transferring, and event management
+   - Ethereum-based smart contract system
+
+7. Other Projects:
    - Token Swap DApp (React.js, Express.js, Moralis, 1inch)
    - Audio NFT Generator (Solidity, IPFS, React.js, Wagmi)
    - Journal Solana (Solana, Rust, React.js)
    - Crypto Wallet Extension (Chrome Extensions, React.js)
    - Tours Website (React.js, Node.js, Express.js, MongoDB)
-   - Event Management Contract (Solidity)
 """,
 
     "freelance": """
-Freelance Services:
+Freelance Services & Availability:
+
+Prateek is available for part-time freelance work while working full-time at Eurofins IT Solutions.
 
 1. Full-Stack Web Development
    - Responsive and dynamic web applications
@@ -135,30 +142,36 @@ Freelance Services:
    - Custom DAO & DeFi apps
    - Web3.js & Ethers.js integrations
 
-Add-Ons:
+Additional Services:
 - Smart Contract Audits
 - CI/CD Pipeline Setup (Octopus, Jenkins, GitHub Actions)
 - Hosting & Deployment (AWS, Azure, Netlify, Vercel)
 - Custom Web3 Education & Documentation
+
+Why Choose Prateek:
+- Proven experience across multiple blockchain & fullstack projects
+- Clean, scalable, and secure code delivery
+- Agile communication & milestone-based deliveries
+- Flexible with timezone & collaborative in feedback cycles
 
 Contact: prateeksavanur@duck.com
 Website: https://prateeksavanur.xyz/
 """,
 
     "personal": """
-Personal Interests:
+Personal Interests & Background:
 
-Hobbies:
+Hobbies & Interests:
 - Watching favorite shows: Breaking Bad, Game of Thrones, Friends, Taarak Mehta Ka Ooltah Chashmah (TMKOC), Peaky Blinders, Money Heist, The Boys, Narcos
 - Playing music: Guitar, Flute, Singing
-- Geeking out about: Space exploration (huge fan of SpaceX & ISRO), Crypto, finance, and tech trends
+- Passionate about: Space exploration (huge fan of SpaceX & ISRO), Crypto, finance, and tech trends
 - Occasionally: Reading fiction, Catching up on memes
 
-Vision:
-Passionate about the intersection of finance and technology, particularly the transformative potential of decentralized finance (DeFi). Aims to build innovative blockchain-powered financial solutions that challenge traditional systems and empower people globally.
+Vision & Philosophy:
+Prateek is passionate about the intersection of finance and technology, particularly the transformative potential of decentralized finance (DeFi). He aims to build innovative blockchain-powered financial solutions that challenge traditional systems and empower people globally.
 
 Fun Fact:
-Once debugged a smart contract at 3 AM with coffee in one hand and guitar in the other – productivity + vibes combo.
+Prateek once debugged a smart contract at 3 AM with coffee in one hand and guitar in the other – productivity + vibes combo.
 
 Social Links:
 - Website: https://prateeksavanur.xyz/
@@ -179,21 +192,21 @@ def search_knowledge_base(query):
     
     # Keywords to section mapping
     keywords = {
-        "about": ["who", "about", "background", "education", "skills", "expertise"],
-        "experience": ["experience", "work", "job", "internship", "role", "company", "eurofins", "devops"],
-        "projects": ["project", "github", "code", "built", "created", "stablecoin", "nft", "dao", "crowdfunding", "swapify", "barter"],
-        "freelance": ["freelance", "hire", "services", "contact", "work", "available", "price", "cost"],
-        "personal": ["hobby", "interest", "music", "guitar", "shows", "personal", "fun", "space", "spacex"]
+        "about": ["who", "about", "background", "education", "skills", "expertise", "prateek"],
+        "experience": ["experience", "work", "job", "internship", "role", "company", "eurofins", "devops", "career"],
+        "projects": ["project", "github", "code", "built", "created", "stablecoin", "nft", "dao", "crowdfunding", "swapify", "barter", "portfolio"],
+        "freelance": ["freelance", "hire", "services", "contact", "work", "available", "price", "cost", "consulting"],
+        "personal": ["hobby", "interest", "music", "guitar", "shows", "personal", "fun", "space", "spacex", "hobbies"]
     }
     
-    # Find relevant sections
+    # Find relevant sections based on keywords
     for section, section_keywords in keywords.items():
         if any(keyword in query_lower for keyword in section_keywords):
             relevant_sections.append(section)
     
-    # If no specific keywords found, include all sections
+    # If no specific keywords found, include most relevant sections
     if not relevant_sections:
-        relevant_sections = list(KNOWLEDGE_BASE.keys())
+        relevant_sections = ["about", "experience", "projects"]
     
     # Combine relevant information
     context = ""
@@ -216,9 +229,10 @@ Context:
 
 Question: {query}
 
-Please provide a detailed, comprehensive response about Prateek. When referring to Prateek, use third person ("Prateek is...", "He has experience in...", etc.). If you're asked about who you are, clearly state that you are Prateek's AI assistant.
-
-Guidelines:
+Instructions:
+- Provide a detailed, comprehensive response about Prateek
+- When referring to Prateek, use third person ("Prateek is...", "He has experience in...", etc.)
+- If asked about who you are, clearly state that you are Prateek's AI assistant
 - Answer only based on the provided context
 - Be professional and knowledgeable
 - If information isn't in the context, say you don't have that information
@@ -255,10 +269,25 @@ Answer:"""
         logger.error(f"Error calling Groq API: {e}")
         return "I apologize, but I'm having trouble processing your request right now. Please contact Prateek directly at prateeksavanur@duck.com."
 
-@app.route('/')
-def index():
-    """Serve the main chat interface"""
-    return render_template('index.html')
+@app.route('/', methods=['GET'])
+def home():
+    """API information endpoint"""
+    return jsonify({
+        "message": "Prateek's AI Assistant API",
+        "version": "1.0.0",
+        "endpoints": {
+            "POST /api/chat": "Main chat endpoint - send message to get AI response",
+            "GET /api/health": "Health check endpoint"
+        },
+        "usage": {
+            "chat": {
+                "method": "POST",
+                "url": "/api/chat",
+                "body": {"message": "Your question about Prateek"},
+                "response": {"response": "AI response", "sources": ["source"], "error": None}
+            }
+        }
+    })
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -268,15 +297,19 @@ def chat():
         if not data or 'message' not in data:
             return jsonify({
                 "error": "Missing 'message' in request body",
-                "response": None
+                "response": None,
+                "sources": []
             }), 400
         
         query_text = data['message'].strip()
         if not query_text:
             return jsonify({
                 "error": "Empty message provided",
-                "response": None
+                "response": None,
+                "sources": []
             }), 400
+        
+        logger.info(f"Processing query: {query_text}")
         
         # Search knowledge base for relevant context
         context = search_knowledge_base(query_text)
@@ -294,7 +327,8 @@ def chat():
         logger.error(f"Error processing chat request: {e}")
         return jsonify({
             "error": f"An error occurred: {str(e)}",
-            "response": "I apologize, but I encountered an error while processing your request. Please try again or contact Prateek directly at prateeksavanur@duck.com."
+            "response": "I apologize, but I encountered an error while processing your request. Please try again or contact Prateek directly at prateeksavanur@duck.com.",
+            "sources": []
         }), 500
 
 @app.route('/api/health', methods=['GET'])
@@ -304,9 +338,11 @@ def health_check():
     
     status = {
         "status": "healthy",
-        "database": "available",
+        "api_version": "1.0.0",
         "model": "available" if groq_api_key else "unavailable",
-        "groq_api_key": "configured" if groq_api_key else "missing"
+        "groq_api_key": "configured" if groq_api_key else "missing",
+        "knowledge_base": "loaded",
+        "endpoints": ["POST /api/chat", "GET /api/health"]
     }
     return jsonify(status)
 
@@ -319,4 +355,5 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
