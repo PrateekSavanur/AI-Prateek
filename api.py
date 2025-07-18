@@ -253,7 +253,7 @@ Answer:"""
                 "messages": [
                     {"role": "user", "content": prompt}
                 ],
-                "max_tokens": 512,
+                "max_tokens": 128,
                 "temperature": 0.3
             },
             timeout=30
